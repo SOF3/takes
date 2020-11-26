@@ -1,0 +1,8 @@
+[package]
+name = "takes"
+version = "0.1.0"
+authors = ["SOFe <sofe2038@gmail.com>"]
+edition = "2018"
+description = "Variant of Read::take() that supports Seek"
+repository = "https://github.com/SOF3/takes"
+license = "Apache-2.0"
