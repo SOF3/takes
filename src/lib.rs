@@ -1,14 +1,13 @@
 //! A Seekable `Take` implementation.
 
 #![cfg_attr(not(debug_assertions), deny(warnings, missing_docs, clippy::dbg_macro))]
-
 #![cfg_attr(feature = "read_initializer", feature(read_initializer))]
 
 use std::cmp;
-use std::io::{Error,ErrorKind,Read, Seek, SeekFrom, Result};
+use std::io::{Error, ErrorKind, Read, Result, Seek, SeekFrom};
 
 /// Extension trait for `Read + Seek` to support `takes`
-pub trait Ext : Read + Seek + Sized {
+pub trait Ext: Read + Seek + Sized {
     /// Returns a seekable Take.
     ///
     /// # Errors
@@ -68,17 +67,23 @@ impl<R: Seek> Seek for Takes<R> {
         Ok(match seek {
             SeekFrom::Start(offset) => {
                 if offset < self.start || offset > self.current {
-                    return Err(Error::new(ErrorKind::UnexpectedEof, "cannot seek beyond Takes range"));
+                    return Err(Error::new(
+                        ErrorKind::UnexpectedEof,
+                        "cannot seek beyond Takes range",
+                    ));
                 }
                 self.inner.seek(SeekFrom::Start(offset))?
-            },
+            }
             SeekFrom::Current(delta) => {
                 let dest = (self.current as i64) + delta;
                 if dest < 0 || (dest as u64) > self.limit {
-                    return Err(Error::new(ErrorKind::UnexpectedEof, "cannot seek beyond Takes range"));
+                    return Err(Error::new(
+                        ErrorKind::UnexpectedEof,
+                        "cannot seek beyond Takes range",
+                    ));
                 }
                 self.inner.seek(SeekFrom::Current(delta))?
-            },
+            }
             SeekFrom::End(_) => unimplemented!("SeekFrom::End implementation would be ambiguous"),
         })
     }
